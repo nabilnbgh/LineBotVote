@@ -47,7 +47,7 @@ def handle_message(event):
     if msg == '/contact':
         message = TextSendMessage(text= 'This bot is created by Uyamikun\n Contant me at : 13519168@std.stei.itb.ac.id')
         line_bot_api.reply_message(event.reply_token,message)
-    else
+    else :
         message = TextSendMessage(text= msg)
         line_bot_api.reply_message(event.reply_token,message) 
 if __name__ == "__main__":
