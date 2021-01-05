@@ -38,21 +38,18 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     msg = event.message.text
-
-       
-    
-        print('')
-        print('')
-    if '/vote' in msg :
+    if msg == '/vote':
         message = TextSendMessage(text='ketikan : \n /login (Login) \n /info (Information)')
         line_bot_api.reply_message(event.reply_token,message)
-    if '/help' in msg :
+    if msg == '/help':
         message = TextSendMessage(text= 'ketik /vote untuk vote login NIM dibutuhkan)')
         line_bot_api.reply_message(event.reply_token,message)
-    if '/contact' in msg :
+    if msg == '/contact':
         message = TextSendMessage(text= 'This bot is created by Uyamikun\n Contant me at : 13519168@std.stei.itb.ac.id')
         line_bot_api.reply_message(event.reply_token,message)
-    
+    else
+        message = TextSendMessage(text= msg)
+        line_bot_api.reply_message(event.reply_token,message) 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
