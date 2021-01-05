@@ -41,7 +41,7 @@ def handle_message(event):
     if 'hello' in msg:
         message = TextSendMessage(text='cobain')
         line_bot_api.reply_message(event.reply_token,message)
-    else
+    else :
         message = TextSendMessage(text=msg)
         line_bot_api.reply_message(event.reply_token,message)
 
