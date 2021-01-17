@@ -49,9 +49,17 @@ def handle_message(event):
     if msg == '/contact':
         message = TextSendMessage(text= 'This bot is created by Uyamikun\n Contant me at : 13519168@std.stei.itb.ac.id')
         line_bot_api.reply_message(event.reply_token,message)
+    if msg == '/groupid':
+        summary = line_bot_api.get_group_summary(group_id)
+        message = TextSendMessage(text= summary.group_id)
+        line_bot_api.reply_message(event.reply_token,message)
+        message = TextSendMessage(text= summary.group_name)
+        line_bot_api.reply_message(event.reply_token,message)
+        message = TextSendMessage(text= summary.picture_url)
+        line_bot_api.reply_message(event.reply_token,message)
     else :
         message = TextSendMessage(text= msg)
-        line_bot_api.reply_message(event.reply_token,message) 
+        line_bot_api.reply_message(event.reply_token,message)
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
