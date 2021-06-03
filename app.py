@@ -1,66 +1,91 @@
-import os
+# -*- coding: utf-8 -*-
+from linepy import *
+import json, time, random
 
-from flask import Flask, request, abort
+client = LineClient()
+#client = LineClient(authToken='AUTH TOKEN')
+client.log("Auth Token : " + str(client.authToken))
 
-from linebot import (
-    LineBotApi, WebhookHandler
-)
-from linebot.exceptions import (
-    InvalidSignatureError
-)
-from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage,
-)
+channel = LineChannel(client)
+client.log("Channel Access Token : " + str(channel.channelAccessToken))
 
-app = Flask(__name__)
-
-line_bot_api = LineBotApi('mra4KD3HeDaq8f7i2sMAkWfMz+h8SpejlabC7F9NuJnbxN4jtfxXQ0Phnrm/CBtVnVU7Xn86gJ00Cc6IixFGAbUkHVjdjzgNb/YFMq/aRcGwPUK4482acdJ61Bwsir/Or8yPEXq5jp/A7V02tpmfxgdB04t89/1O/w1cDnyilFU=')
-handler = WebhookHandler('05eb43ab3c41895b70ef09da7d2ab673')
+poll = LinePoll(client)
 
 
-
-@app.route("/callback", methods=['POST'])
-def callback():
-    # Get X-Line-Signature header value
-    signature = request.headers['X-Line-Signature']
-
-    # Get request body as text
-    body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
-
-    # Handle webhook body
+while True:
     try:
-        handler.handle(body, signature)
-    except InvalidSignatureError:
-        abort(400)
+        ops=poll.singleTrace(count=50)
+        for op in ops:
+            if op.type == 25:
+                msg = op.message
+                text = msg.text
+                msg_id = msg.id
+                receiver = msg.to
+                sender = msg._from
+                try:
+                    if msg.contentType == 0:
+                        if msg.toType == 2:
+                            client.sendChatChecked(receiver, msg_id)
+                            contact = client.getContact(sender)
+                            if text.lower() == '@everyone':
+                                group = client.getGroup(msg.to)
+                                nama = [contact.mid for contact in group.members]
+                                nm1, nm2, nm3, nm4, nm5, jml = [], [], [], [], [], len(nama)
+                                if jml <= 100:
+                                    client.mention(msg.to, nama)
+                                if jml > 100 and jml < 200:
+                                    for i in range(0, 100):
+                                        nm1 += [nama[i]]
+                                    client.mention(msg.to, nm1)
+                                    for j in range(101, len(nama)):
+                                        nm2 += [nama[j]]
+                                    client.mention(msg.to, nm2)
+                                if jml > 200 and jml < 300:
+                                    for i in range(0, 100):
+                                        nm1 += [nama[i]]
+                                    client.mention(msg.to, nm1)
+                                    for j in range(101, 200):
+                                        nm2 += [nama[j]]
+                                    client.mention(msg.to, nm2)
+                                    for k in range(201, len(nama)):
+                                        nm3 += [nama[k]]
+                                    client.mention(msg.to, nm3)
+                                if jml > 300 and jml < 400:
+                                    for i in range(0, 100):
+                                        nm1 += [nama[i]]
+                                    client.mention(msg.to, nm1)
+                                    for j in range(101, 200):
+                                        nm2 += [nama[j]]
+                                    client.mention(msg.to, nm2)
+                                    for k in range(201, len(nama)):
+                                        nm3 += [nama[k]]
+                                    client.mention(msg.to, nm3)
+                                    for l in range(301, len(nama)):
+                                        nm4 += [nama[l]]
+                                    client.mention(msg.to, nm4)
+                                if jml > 400 and jml < 501:
+                                    for i in range(0, 100):
+                                        nm1 += [nama[i]]
+                                    client.mention(msg.to, nm1)
+                                    for j in range(101, 200):
+                                        nm2 += [nama[j]]
+                                    client.mention(msg.to, nm2)
+                                    for k in range(201, len(nama)):
+                                        nm3 += [nama[k]]
+                                    client.mention(msg.to, nm3)
+                                    for l in range(301, len(nama)):
+                                        nm4 += [nama[l]]
+                                    client.mention(msg.to, nm4)
+                                    for m in range(401, len(nama)):
+                                        nm5 += [nama[m]]
+                                    client.mention(msg.to, nm5)             
+                except Exception as e:
+                    client.log("[SEND_MESSAGE] ERROR : " + str(e))
+            else:
+                pass
 
-    return 'OK'
-
-
-@handler.add(MessageEvent, message=TextMessage)
-def handle_message(event):
-    msg = event.message.text
-    if msg == '/vote':
-        message = TextSendMessage(text='ketikan : \n /login (Login) \n /info (Information)')
-        line_bot_api.reply_message(event.reply_token,message)
-    if msg == '/help':
-        message = TextSendMessage(text= 'ketik /vote (untuk vote, login NIM dibutuhkan)')
-        line_bot_api.reply_message(event.reply_token,message)
-    if msg == '/contact':
-        message = TextSendMessage(text= 'This bot is created by Uyamikun\n Contant me at : 13519168@std.stei.itb.ac.id')
-        line_bot_api.reply_message(event.reply_token,message)
-    if msg == '/groupid':
-        summary = line_bot_api.get_group_summary(group_id)
-        message = TextSendMessage(text= summary.group_id)
-        line_bot_api.reply_message(event.reply_token,message)
-        message = TextSendMessage(text= summary.group_name)
-        line_bot_api.reply_message(event.reply_token,message)
-        message = TextSendMessage(text= summary.picture_url)
-        line_bot_api.reply_message(event.reply_token,message)
-    else :
-        message = TextSendMessage(text= msg)
-        line_bot_api.reply_message(event.reply_token,message)
-if __name__ == "__main__":
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
-
+            # Don't remove this line, if you wan't get error soon!
+            poll.setRevision(op.revision)
+            
+    except Exception as e:
+        client.log("[SINGLE_TRACE] ERROR : " + str(e))
